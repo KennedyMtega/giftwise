@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300" role="img" aria-label="Gift placeholder">
+  <rect width="400" height="300" fill="#f4e7e4" />
+  <rect x="130" y="130" width="140" height="100" rx="8" fill="#d94a5c" />
+  <rect x="120" y="105" width="160" height="35" rx="6" fill="#c2384c" />
+  <rect x="190" y="105" width="20" height="125" fill="#f7d9a0" />
+  <path d="M200 105c-25-6-45-20-45-40 0-14 12-24 26-20 14 4 19 26 19 60z" fill="#e8b04b" />
+  <path d="M200 105c25-6 45-20 45-40 0-14-12-24-26-20-14 4-19 26-19 60z" fill="#e8b04b" />
+  <circle cx="200" cy="65" r="12" fill="#d99a3c" />
+</svg>

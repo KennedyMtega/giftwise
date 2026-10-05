@@ -1,0 +1,75 @@
+import {
+  Apple,
+  Baby,
+  BookOpen,
+  Briefcase,
+  Cake,
+  Candy,
+  Droplets,
+  Flame,
+  Flower,
+  Flower2,
+  Gem,
+  Gift,
+  GraduationCap,
+  Headphones,
+  Heart,
+  House,
+  Image as ImageIcon,
+  Leaf,
+  Mail,
+  PartyPopper,
+  PenTool,
+  Puzzle,
+  Shirt,
+  Sparkles,
+  Ticket,
+  TreePine,
+  Trophy,
+  UtensilsCrossed,
+  Watch,
+  Wine,
+} from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
+
+/** Occasion (category) id → SVG icon. Fallback: Gift. */
+export const categoryIcons: Record<string, LucideIcon> = {
+  birthday: Cake,
+  anniversary: Wine,
+  wedding: Gem,
+  graduation: GraduationCap,
+  holiday: PartyPopper,
+  housewarming: House,
+  'baby-shower': Baby,
+  retirement: Trophy,
+  'thank-you': Mail,
+  'get-well': Flower2,
+  corporate: Briefcase,
+  'self-care': Leaf,
+  valentines: Heart,
+  'mothers-day': Flower,
+  'fathers-day': Shirt,
+  christmas: TreePine,
+  engagement: Sparkles,
+  teacher: Apple,
+}
+
+/** Gift type id → SVG icon. Fallback: Gift. */
+export const giftTypeIcons: Record<string, LucideIcon> = {
+  personalized: PenTool,
+  flowers: Flower2,
+  sweets: Candy,
+  candles: Flame,
+  jewelry: Gem,
+  tech: Headphones,
+  toys: Puzzle,
+  gourmet: UtensilsCrossed,
+  beauty: Droplets,
+  books: BookOpen,
+  decor: ImageIcon,
+  experiences: Ticket,
+  accessories: Watch,
+}
+
+export const categoryIcon = (id: string): LucideIcon => categoryIcons[id] ?? Gift
+export const giftTypeIcon = (id: string): LucideIcon => giftTypeIcons[id] ?? Gift
