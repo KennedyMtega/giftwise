@@ -9,13 +9,22 @@ import { cn } from '@/lib/utils'
 const CARD_SIZES =
   '(min-width: 1280px) 16vw, (min-width: 1024px) 20vw, (min-width: 768px) 25vw, (min-width: 640px) 50vw, 50vw'
 
-export function TypeCard({ type, className }: { type: GiftType; className?: string }) {
-  const count = productsByType(type.id).length
+export function TypeCard({
+  type,
+  count,
+  className,
+}: {
+  type: GiftType
+  /** Live product count; falls back to the static tally */
+  count?: number
+  className?: string
+}) {
+  const resolvedCount = count ?? productsByType(type.id).length
 
   return (
     <Link
       href={`/gifts?type=${type.id}`}
-      aria-label={`${type.name}, ${count} gifts`}
+      aria-label={`${type.name}, ${resolvedCount} gifts`}
       className={cn(
         'group flex h-full flex-col overflow-hidden rounded-xl border border-border/70 bg-card shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md',
         className
@@ -33,7 +42,7 @@ export function TypeCard({ type, className }: { type: GiftType; className?: stri
       <div className="flex flex-1 flex-col p-3 sm:p-4">
         <h3 className="text-sm font-semibold leading-snug sm:text-base">{type.name}</h3>
         <div className="mt-auto flex items-center justify-between gap-2 pt-2">
-          <p className="text-xs text-muted-foreground">{count} gifts</p>
+          <p className="text-xs text-muted-foreground">{resolvedCount} gifts</p>
           <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent transition-colors group-hover:bg-primary">
             <ArrowRight
               className="h-4 w-4 text-primary transition-transform group-hover:translate-x-0.5 group-hover:text-primary-foreground"

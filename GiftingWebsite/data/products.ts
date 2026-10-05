@@ -1,22 +1,52 @@
-import { giftTypes } from './categories'
+export interface VariationOption {
+  label: string
+  /** Added to the base price when this option is chosen */
+  priceDelta?: number
+  /** Hex colour used to render a swatch chip */
+  swatch?: string
+}
+
+export interface Variation {
+  id: string
+  /** e.g. "Colour", "Size", "Metal" */
+  name: string
+  options: VariationOption[]
+}
+
+export interface CustomizationField {
+  id: string
+  label: string
+  type: 'text' | 'textarea' | 'choice'
+  required?: boolean
+  maxLength?: number
+  options?: string[]
+  priceDelta?: number
+}
 
 export interface Gift {
   id: string
   name: string
   price: number
   image: string
+  /** Image gallery (main photo first) */
+  images?: string[]
   /** Occasion, must match a `GiftCategory.name` from data/categories.ts */
   category: string
   /** Gift type id, must match a `GiftType.id` from data/categories.ts */
   type: string
   tag?: 'Bestseller' | 'New' | 'Premium' | 'Eco' | 'Limited'
   description: string
+  /** Colour / size / … variations offered for this product */
+  variations?: Variation[]
+  /** Personalization fields (engraving, gift note, …) */
+  customization?: CustomizationField[]
+  stock?: number
 }
 
-type RawGift = Omit<Gift, 'image'> & { image?: string }
-
-const typeImage = (typeId: string) =>
-  giftTypes.find((type) => type.id === typeId)?.image ?? '/placeholder.svg'
+type RawGift = Omit<
+  Gift,
+  'image' | 'images' | 'variations' | 'customization' | 'stock'
+>
 
 const rawGifts: RawGift[] = [
   // Birthday Gifts
@@ -116,9 +146,18 @@ const rawGifts: RawGift[] = [
   { id: 'g47', name: 'Bookstore Gift Card', price: 25.0, category: 'Teacher Appreciation', type: 'experiences', description: 'Digital gift card redeemable against any title or journal.' },
 ]
 
+import { categories } from './categories'
+import { customizationFor, imagesFor, variationsFor } from './variations'
+
 export const products: Gift[] = rawGifts.map((gift) => ({
   ...gift,
-  image: gift.image ?? typeImage(gift.type),
+  image: `/images/products/${gift.id}.jpg`,
+  images: imagesFor(gift, (name) =>
+    categories.find((category) => category.name === name)?.id
+  ),
+  variations: variationsFor(gift),
+  customization: customizationFor(gift),
+  stock: 100,
 }))
 
 /** Item count per occasion name, used by category cards. */

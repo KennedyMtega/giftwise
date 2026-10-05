@@ -3,11 +3,11 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import Image from 'next/image'
 
 const mostPurchasedItems = [
-  { id: 1, name: 'Birthday Cake', count: 5, image: '/placeholder.svg?height=50&width=50' },
-  { id: 2, name: 'Flower Bouquet', count: 4, image: '/placeholder.svg?height=50&width=50' },
-  { id: 3, name: 'Chocolate Box', count: 3, image: '/placeholder.svg?height=50&width=50' },
-  { id: 4, name: 'Gift Card', count: 3, image: '/placeholder.svg?height=50&width=50' },
-  { id: 5, name: 'Scented Candles', count: 2, image: '/placeholder.svg?height=50&width=50' },
+  { id: 1, name: 'Birthday Cake', count: 5, image: '/images/types/sweets.jpg' },
+  { id: 2, name: 'Flower Bouquet', count: 4, image: '/images/types/flowers.jpg' },
+  { id: 3, name: 'Chocolate Box', count: 3, image: '/images/products/g2.jpg' },
+  { id: 4, name: 'Gift Card', count: 3, image: '/images/types/experiences.jpg' },
+  { id: 5, name: 'Scented Candles', count: 2, image: '/images/products/g5.jpg' },
 ]
 
 export function MostPurchased() {

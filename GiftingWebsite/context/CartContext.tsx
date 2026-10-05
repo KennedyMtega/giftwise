@@ -2,34 +2,70 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react'
 
-interface CartItem {
+export interface CartItem {
+  /** Unique per product + variation + customization combo */
+  key: string
   id: string
   name: string
   price: number
   quantity: number
   image: string
+  variations?: Record<string, string>
+  customization?: Record<string, string>
+}
+
+export type AddToCartInput = Omit<CartItem, 'key' | 'quantity'> & {
+  key?: string
+  quantity?: number
 }
 
 interface CartContextType {
   cartItems: CartItem[]
-  addToCart: (item: CartItem) => void
-  removeFromCart: (id: string) => void
-  updateQuantity: (id: string, quantity: number) => void
+  addToCart: (item: AddToCartInput) => void
+  removeFromCart: (key: string) => void
+  updateQuantity: (key: string, quantity: number) => void
   clearCart: () => void
   total: number
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined)
 
+export const cartKey = (
+  id: string,
+  variations?: Record<string, string>,
+  customization?: Record<string, string>
+) =>
+  [
+    id,
+    Object.entries(variations ?? {})
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([k, v]) => `${k}:${v}`)
+      .join('|'),
+    Object.entries(customization ?? {})
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([k, v]) => `${k}:${v}`)
+      .join('|'),
+  ].join('::')
+
+const normalize = (raw: string | null): CartItem[] => {
+  if (!raw) return []
+  try {
+    const parsed = JSON.parse(raw) as CartItem[]
+    return parsed.map((item) => ({
+      ...item,
+      key: item.key ?? cartKey(item.id, item.variations, item.customization),
+    }))
+  } catch {
+    return []
+  }
+}
+
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([])
   const [total, setTotal] = useState(0)
 
   useEffect(() => {
-    const storedCart = localStorage.getItem('cart')
-    if (storedCart) {
-      setCartItems(JSON.parse(storedCart))
-    }
+    setCartItems(normalize(localStorage.getItem('cart')))
   }, [])
 
   useEffect(() => {
@@ -38,27 +74,28 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setTotal(newTotal)
   }, [cartItems])
 
-  const addToCart = (item: CartItem) => {
-    setCartItems(prevItems => {
-      const existingItem = prevItems.find(i => i.id === item.id)
+  const addToCart = (item: AddToCartInput) => {
+    const key = item.key ?? cartKey(item.id, item.variations, item.customization)
+    setCartItems((prevItems) => {
+      const existingItem = prevItems.find((i) => i.key === key)
       if (existingItem) {
-        return prevItems.map(i => 
-          i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
+        return prevItems.map((i) =>
+          i.key === key ? { ...i, quantity: i.quantity + (item.quantity ?? 1) } : i
         )
       }
-      return [...prevItems, { ...item, quantity: 1 }]
+      return [...prevItems, { ...item, key, quantity: item.quantity ?? 1 }]
     })
   }
 
-  const removeFromCart = (id: string) => {
-    setCartItems(prevItems => prevItems.filter(item => item.id !== id))
+  const removeFromCart = (key: string) => {
+    setCartItems((prevItems) => prevItems.filter((item) => item.key !== key))
   }
 
-  const updateQuantity = (id: string, quantity: number) => {
-    setCartItems(prevItems => 
-      prevItems.map(item => 
-        item.id === id ? { ...item, quantity: Math.max(0, quantity) } : item
-      ).filter(item => item.quantity > 0)
+  const updateQuantity = (key: string, quantity: number) => {
+    setCartItems((prevItems) =>
+      prevItems
+        .map((item) => (item.key === key ? { ...item, quantity: Math.max(0, quantity) } : item))
+        .filter((item) => item.quantity > 0)
     )
   }
 
@@ -67,7 +104,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }
 
   return (
-    <CartContext.Provider value={{ cartItems, addToCart, removeFromCart, updateQuantity, clearCart, total }}>
+    <CartContext.Provider
+      value={{ cartItems, addToCart, removeFromCart, updateQuantity, clearCart, total }}
+    >
       {children}
     </CartContext.Provider>
   )
@@ -80,4 +119,3 @@ export const useCart = () => {
   }
   return context
 }
-
