@@ -1,80 +1,64 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import { notFound } from 'next/navigation'
-import Image from 'next/image'
 import Link from 'next/link'
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { useCart } from '@/context/CartContext'
-import { products } from '@/data/products'
+import { ArrowLeft } from 'lucide-react'
 
-const categories = [
-  { id: '1', name: 'Birthday Gifts' },
-  { id: '2', name: 'Anniversary Gifts' },
-  { id: '3', name: 'Wedding Gifts' },
-  { id: '4', name: 'Graduation Gifts' },
-  { id: '5', name: 'Holiday Gifts' },
-  { id: '6', name: 'Housewarming Gifts' },
-  { id: '7', name: 'Baby Shower Gifts' },
-  { id: '8', name: 'Retirement Gifts' },
-  { id: '9', name: 'Thank You Gifts' },
-  { id: '10', name: 'Get Well Gifts' },
-  { id: '11', name: 'Corporate Gifts' },
-  { id: '12', name: 'Self-Care Gifts' },
-]
+import { ProductCard } from '@/components/ProductCard'
+import { categoryById } from '@/data/categories'
+import { categoryCounts, products } from '@/data/products'
+import { categoryIcon } from '@/lib/icons'
 
 export default function CategoryPage({ params }: { params: { id: string } }) {
-  const [category, setCategory] = useState<any>(null)
-  const { addToCart } = useCart()
-
-  useEffect(() => {
-    const fetchCategory = async () => {
-      const foundCategory = categories.find(cat => cat.id === params.id)
-      if (foundCategory) {
-        const categoryProducts = products.filter(product => product.category === foundCategory.name)
-        setCategory({ ...foundCategory, gifts: categoryProducts })
-      } else {
-        notFound()
-      }
-    }
-
-    fetchCategory()
-  }, [params.id])
+  const category = categoryById(params.id)
 
   if (!category) {
-    return <div>Loading...</div>
+    notFound()
   }
 
+  const gifts = products.filter((product) => product.category === category.name)
+  const CategoryIcon = categoryIcon(category.id)
+
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-4xl font-bold text-primary mb-8">{category.name}</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {category.gifts.map((gift: any) => (
-          <Card key={gift.id}>
-            <CardHeader>
-              <Image
-                src={gift.image}
-                alt={gift.name}
-                width={200}
-                height={200}
-                className="w-full h-48 object-cover rounded-t-lg"
-              />
-            </CardHeader>
-            <CardContent>
-              <CardTitle className="text-lg">{gift.name}</CardTitle>
-              <p className="text-2xl font-bold text-primary mt-2">${gift.price.toFixed(2)}</p>
-            </CardContent>
-            <CardFooter className="flex justify-between">
-              <Button asChild variant="outline">
-                <Link href={`/gifts/${gift.id}`}>View Details</Link>
-              </Button>
-              <Button onClick={() => addToCart({ id: gift.id, name: gift.name, price: gift.price, quantity: 1, image: gift.image })}>Add to Cart</Button>
-            </CardFooter>
-          </Card>
-        ))}
-      </div>
+    <div className="space-y-6">
+      <Link
+        href="/categories"
+        className="inline-flex items-center gap-1 text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+      >
+        <ArrowLeft className="h-4 w-4" /> All occasions
+      </Link>
+
+      <header className="rounded-2xl bg-[#000068] px-5 py-8 text-white sm:px-8 sm:py-10">
+        <div className="flex items-center gap-3">
+          <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/10 sm:h-14 sm:w-14">
+            <CategoryIcon className="h-6 w-6 text-gold sm:h-7 sm:w-7" aria-hidden />
+          </span>
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">
+              {categoryCounts[category.name] ?? 0} gifts
+            </p>
+            <h1 className="mt-1 text-2xl font-bold tracking-tight sm:text-3xl lg:text-4xl">
+              {category.name}
+            </h1>
+          </div>
+        </div>
+        <p className="mt-4 max-w-2xl text-sm text-white/75 sm:text-base">{category.description}</p>
+      </header>
+
+      {gifts.length > 0 ? (
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 xl:grid-cols-4">
+          {gifts.map((gift) => (
+            <ProductCard key={gift.id} product={gift} />
+          ))}
+        </div>
+      ) : (
+        <div className="rounded-xl border border-dashed p-8 text-center text-muted-foreground">
+          No gifts here yet.{' '}
+          <Link href="/gifts" className="font-medium text-primary hover:underline">
+            Browse everything
+          </Link>
+        </div>
+      )}
     </div>
   )
 }
-
