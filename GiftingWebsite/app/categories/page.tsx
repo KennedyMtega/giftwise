@@ -1,15 +1,26 @@
 import { CategoryCard } from '@/components/CategoryCard'
 import { TypeCard } from '@/components/TypeCard'
 import { SectionHeading } from '@/components/SectionHeading'
-import { categories, giftTypes } from '@/data/categories'
-import { products } from '@/data/products'
+import { giftTypes } from '@/data/categories'
+import { readDb } from '@/lib/server/store'
 
-export default function CategoriesPage() {
+export const dynamic = 'force-dynamic'
+
+export default async function CategoriesPage() {
+  const db = await readDb()
+  const categories = db.categories
+  const counts: Record<string, number> = db.products.reduce(
+    (acc, product) => ({ ...acc, [product.category]: (acc[product.category] ?? 0) + 1 }),
+    {} as Record<string, number>
+  )
+  const typeCounts = (typeId: string) =>
+    db.products.filter((product) => product.type === typeId).length
+
   return (
     <div className="space-y-8 sm:space-y-10">
       <header className="rounded-2xl bg-[#000068] px-5 py-8 text-white sm:px-8 sm:py-10">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold">
-          {categories.length} occasions · {products.length} gifts
+          {categories.length} occasions · {db.products.length} gifts
         </p>
         <h1 className="mt-2 text-2xl font-bold tracking-tight sm:text-3xl lg:text-4xl">
           Shop by Occasion
@@ -27,7 +38,7 @@ export default function CategoriesPage() {
         />
         <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
           {categories.map((category) => (
-            <CategoryCard key={category.id} category={category} />
+            <CategoryCard key={category.id} category={category} count={counts[category.name] ?? 0} />
           ))}
         </div>
       </section>
@@ -41,7 +52,7 @@ export default function CategoriesPage() {
         />
         <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
           {giftTypes.map((type) => (
-            <TypeCard key={type.id} type={type} />
+            <TypeCard key={type.id} type={type} count={typeCounts(type.id)} />
           ))}
         </div>
       </section>

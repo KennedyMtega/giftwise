@@ -5,6 +5,8 @@ export interface GiftCategory {
   /** Short label used in chips and filters */
   short: string
   description: string
+  /** Optional cover image; defaults to /images/categories/<id>.jpg */
+  image?: string
 }
 
 /**
@@ -128,28 +130,28 @@ export interface GiftType {
   id: string
   name: string
   description: string
-  /** Artwork in /public/images/gifts */
+  /** Photo in /public/images/types */
   image: string
 }
 
 /**
  * Gift types (what the product *is*), independent of the occasion it is for.
- * Icons live in `lib/icons.ts`; artwork lives in `public/images/gifts`.
+ * Icons live in `lib/icons.ts`; photos live in `public/images/types`.
  */
 export const giftTypes: GiftType[] = [
-  { id: 'personalized', name: 'Personalized Keepsakes', description: 'Engraved, monogrammed and made for one person only.', image: '/images/gifts/personalized.svg' },
-  { id: 'flowers', name: 'Flowers & Plants', description: 'Fresh bouquets, hardy houseplants and dried stems.', image: '/images/gifts/flowers.svg' },
-  { id: 'sweets', name: 'Chocolates & Sweets', description: 'Truffles, brownie boxes and small-batch confectionery.', image: '/images/gifts/sweets.svg' },
-  { id: 'candles', name: 'Candles & Home Fragrance', description: 'Soy candles, diffusers and room mists.', image: '/images/gifts/candles.svg' },
-  { id: 'jewelry', name: 'Jewelry', description: 'Dainty, everyday pieces and statement sparkle.', image: '/images/gifts/jewelry.svg' },
-  { id: 'tech', name: 'Tech Gadgets', description: 'Gadgets they will actually use every day.', image: '/images/gifts/tech.svg' },
-  { id: 'toys', name: 'Toys & Games', description: 'Plush, puzzles and screen-free fun for all ages.', image: '/images/gifts/toys.svg' },
-  { id: 'gourmet', name: 'Gourmet Food & Drinks', description: 'Hampers, artisan snacks and speciality drinks.', image: '/images/gifts/gourmet.svg' },
-  { id: 'beauty', name: 'Beauty & Wellness', description: 'Bath sets, skincare and wellness essentials.', image: '/images/gifts/beauty.svg' },
-  { id: 'books', name: 'Books & Stationery', description: 'Bestsellers, journals and beautiful desk goods.', image: '/images/gifts/books.svg' },
-  { id: 'decor', name: 'Home Decor', description: 'Art, throws and objects that make a house a home.', image: '/images/gifts/decor.svg' },
-  { id: 'experiences', name: 'Gift Cards & Experiences', description: 'When only they know what they really want.', image: '/images/gifts/experiences.svg' },
-  { id: 'accessories', name: 'Accessories', description: 'Watches, bags, eyewear and everyday carry.', image: '/images/gifts/accessories.svg' },
+  { id: 'personalized', name: 'Personalized Keepsakes', description: 'Engraved, monogrammed and made for one person only.', image: '/images/types/personalized.jpg' },
+  { id: 'flowers', name: 'Flowers & Plants', description: 'Fresh bouquets, hardy houseplants and dried stems.', image: '/images/types/flowers.jpg' },
+  { id: 'sweets', name: 'Chocolates & Sweets', description: 'Truffles, brownie boxes and small-batch confectionery.', image: '/images/types/sweets.jpg' },
+  { id: 'candles', name: 'Candles & Home Fragrance', description: 'Soy candles, diffusers and room mists.', image: '/images/types/candles.jpg' },
+  { id: 'jewelry', name: 'Jewelry', description: 'Dainty, everyday pieces and statement sparkle.', image: '/images/types/jewelry.jpg' },
+  { id: 'tech', name: 'Tech Gadgets', description: 'Gadgets they will actually use every day.', image: '/images/types/tech.jpg' },
+  { id: 'toys', name: 'Toys & Games', description: 'Plush, puzzles and screen-free fun for all ages.', image: '/images/types/toys.jpg' },
+  { id: 'gourmet', name: 'Gourmet Food & Drinks', description: 'Hampers, artisan snacks and speciality drinks.', image: '/images/types/gourmet.jpg' },
+  { id: 'beauty', name: 'Beauty & Wellness', description: 'Bath sets, skincare and wellness essentials.', image: '/images/types/beauty.jpg' },
+  { id: 'books', name: 'Books & Stationery', description: 'Bestsellers, journals and beautiful desk goods.', image: '/images/types/books.jpg' },
+  { id: 'decor', name: 'Home Decor', description: 'Art, throws and objects that make a house a home.', image: '/images/types/decor.jpg' },
+  { id: 'experiences', name: 'Gift Cards & Experiences', description: 'When only they know what they really want.', image: '/images/types/experiences.jpg' },
+  { id: 'accessories', name: 'Accessories', description: 'Watches, bags, eyewear and everyday carry.', image: '/images/types/accessories.jpg' },
 ]
 
 export const giftTypeById = (id: string) => giftTypes.find((type) => type.id === id)

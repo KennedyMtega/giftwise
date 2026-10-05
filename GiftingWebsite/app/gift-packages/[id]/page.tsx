@@ -5,9 +5,9 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 
 // Mock data - in a real app, this would come from an API
 const giftPackages = [
-  { id: '1', name: 'Birthday Surprise', price: 49.99, image: '/placeholder.svg?height=300&width=400', description: 'A perfect package to surprise your loved ones on their special day. Includes a birthday cake, balloons, and a personalized card.' },
-  { id: '2', name: 'Anniversary Special', price: 79.99, image: '/placeholder.svg?height=300&width=400', description: 'Celebrate your love with this romantic package. Includes a bottle of champagne, chocolate-covered strawberries, and a bouquet of roses.' },
-  { id: '3', name: 'Graduation Celebration', price: 59.99, image: '/placeholder.svg?height=300&width=400', description: 'Congratulate the graduate with this thoughtful package. Includes a customized diploma frame, a gift card, and a inspirational book.' },
+  { id: '1', name: 'Birthday Surprise', price: 49.99, image: '/images/categories/birthday.jpg', description: 'A perfect package to surprise your loved ones on their special day. Includes a birthday cake, balloons, and a personalized card.' },
+  { id: '2', name: 'Anniversary Special', price: 79.99, image: '/images/categories/anniversary.jpg', description: 'Celebrate your love with this romantic package. Includes a bottle of champagne, chocolate-covered strawberries, and a bouquet of roses.' },
+  { id: '3', name: 'Graduation Celebration', price: 59.99, image: '/images/categories/graduation.jpg', description: 'Congratulate the graduate with this thoughtful package. Includes a customized diploma frame, a gift card, and a inspirational book.' },
 ]
 
 export default function GiftPackagePage({ params }: { params: { id: string } }) {

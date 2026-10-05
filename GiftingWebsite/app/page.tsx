@@ -8,8 +8,10 @@ import { TypeCard } from '@/components/TypeCard'
 import FeaturedGiftPackages from '@/components/FeaturedGiftPackages'
 import { Newsletter } from '@/components/Newsletter'
 import { SectionHeading } from '@/components/SectionHeading'
-import { categories, giftTypes } from '@/data/categories'
-import { categoryCounts } from '@/data/products'
+import { giftTypes } from '@/data/categories'
+import { readDb } from '@/lib/server/store'
+
+export const dynamic = 'force-dynamic'
 
 const perks = [
   { icon: Gift, title: 'Free Gift Wrapping', copy: 'Ribbon, tissue and a handwritten note.' },
@@ -27,12 +29,33 @@ const stats = [
 
 const reviewers = ['AR', 'JM', 'PS', 'LK']
 
-export default function Home() {
+export default async function Home() {
+  const db = await readDb()
+  const categories = db.categories
+  const counts: Record<string, number> = db.products.reduce(
+    (acc, product) => ({ ...acc, [product.category]: (acc[product.category] ?? 0) + 1 }),
+    {} as Record<string, number>
+  )
+  const typeCounts = (typeId: string) =>
+    db.products.filter((product) => product.type === typeId).length
+
   return (
     <div className="space-y-10 sm:space-y-14">
-      {/* Hero + trust strip */}
-      <section className="overflow-hidden rounded-3xl bg-[#000068] text-white">
-        <div className="px-4 pb-8 pt-10 sm:px-8 sm:pt-14 lg:px-12 lg:pb-10 lg:pt-20">
+      {/* Hero + trust strip — full-bleed background image header */}
+      <section className="relative left-1/2 -mt-8 w-screen -translate-x-1/2 overflow-hidden bg-[#000068] text-white">
+        <Image
+          src="/images/hero/gifting.jpg"
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover"
+        />
+        <div
+          className="absolute inset-0 bg-gradient-to-r from-[#000068]/95 via-[#000068]/88 to-[#000068]/75"
+          aria-hidden
+        />
+        <div className="relative px-4 pb-8 pt-10 sm:px-6 sm:pt-14 lg:px-8 lg:pb-10 lg:pt-20">
           <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-12">
             <div className="text-center lg:text-left">
               <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-medium sm:text-sm">
@@ -151,7 +174,7 @@ export default function Home() {
         />
         <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
           {categories.slice(0, 12).map((category) => (
-            <CategoryCard key={category.id} category={category} />
+            <CategoryCard key={category.id} category={category} count={counts[category.name] ?? 0} />
           ))}
         </div>
       </section>
@@ -166,7 +189,7 @@ export default function Home() {
         />
         <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
           {giftTypes.map((type) => (
-            <TypeCard key={type.id} type={type} />
+            <TypeCard key={type.id} type={type} count={typeCounts(type.id)} />
           ))}
         </div>
       </section>
@@ -255,7 +278,7 @@ export default function Home() {
               href={`/categories/${category.id}`}
               className="rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary sm:text-sm"
             >
-              {category.short} · {categoryCounts[category.name] ?? 0}
+              {category.short} · {counts[category.name] ?? 0}
             </Link>
           ))}
         </div>

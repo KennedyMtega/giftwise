@@ -1,6 +1,6 @@
 'use client'
 
-import { Suspense, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Search, SlidersHorizontal } from 'lucide-react'
 
@@ -14,8 +14,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { categories, giftTypes } from '@/data/categories'
-import { products } from '@/data/products'
+import { categories as seedCategories, giftTypes } from '@/data/categories'
+import type { Gift } from '@/data/products'
+import type { GiftCategory } from '@/data/categories'
 import { giftTypeIcon } from '@/lib/icons'
 import { cn } from '@/lib/utils'
 
@@ -25,6 +26,21 @@ function GiftCatalog() {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') ?? 'all')
   const [selectedType, setSelectedType] = useState(searchParams.get('type') ?? 'all')
+  const [products, setProducts] = useState<Gift[]>([])
+  const [categories, setCategories] = useState<GiftCategory[]>(seedCategories)
+  const [loaded, setLoaded] = useState(false)
+
+  useEffect(() => {
+    Promise.all([
+      fetch('/api/products').then((r) => r.json()),
+      fetch('/api/categories').then((r) => r.json()),
+    ])
+      .then(([prods, cats]) => {
+        setProducts(prods)
+        if (Array.isArray(cats) && cats.length) setCategories(cats)
+      })
+      .finally(() => setLoaded(true))
+  }, [])
 
   const filteredProducts = products.filter(
     (product) =>
@@ -32,6 +48,14 @@ function GiftCatalog() {
       (selectedCategory === 'all' || product.category === selectedCategory) &&
       (selectedType === 'all' || product.type === selectedType)
   )
+
+  if (!loaded) {
+    return (
+      <div className="rounded-xl border p-10 text-center text-muted-foreground">
+        Loading the catalog…
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">
@@ -87,7 +111,7 @@ function GiftCatalog() {
           <div className="mb-2 flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted-foreground">
             <SlidersHorizontal className="h-3.5 w-3.5" /> Gift type
           </div>
-          <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
+          <div className="scrollbar-hidden -mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
             <button
               type="button"
               onClick={() => setSelectedType('all')}

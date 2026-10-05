@@ -27,25 +27,42 @@ export default function CartPage() {
       <h1 className="text-3xl font-bold mb-6">Your Cart</h1>
       <div className="grid gap-6">
         {cartItems.map((item) => (
-          <Card key={item.id}>
+          <Card key={item.key}>
             <CardContent className="p-6">
-              <div className="flex items-center space-x-4">
+              <div className="flex flex-wrap items-center gap-4">
                 <Image
                   src={item.image}
                   alt={item.name}
                   width={80}
                   height={80}
-                  className="rounded-md"
+                  className="h-20 w-20 rounded-md object-cover"
                 />
-                <div className="flex-grow">
+                <div className="min-w-0 flex-grow">
                   <h3 className="text-lg font-semibold">{item.name}</h3>
-                  <p className="text-sm text-gray-500">${item.price.toFixed(2)}</p>
+                  <p className="text-sm text-muted-foreground">
+                    ${item.price.toFixed(2)} each
+                  </p>
+                  {Object.entries(item.variations ?? {}).length > 0 && (
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {Object.entries(item.variations ?? {})
+                        .map(([name, value]) => `${name}: ${value}`)
+                        .join(' · ')}
+                    </p>
+                  )}
+                  {Object.entries(item.customization ?? {}).length > 0 && (
+                    <p className="mt-1 text-xs italic text-primary">
+                      {Object.entries(item.customization ?? {})
+                        .map(([label, value]) => `${label}: “${value}”`)
+                        .join(' · ')}
+                    </p>
+                  )}
                 </div>
                 <div className="flex items-center space-x-2">
                   <Button
                     variant="outline"
                     size="icon"
-                    onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                    aria-label={`Decrease quantity of ${item.name}`}
+                    onClick={() => updateQuantity(item.key, item.quantity - 1)}
                   >
                     <Minus className="h-4 w-4" />
                   </Button>
@@ -53,7 +70,8 @@ export default function CartPage() {
                   <Button
                     variant="outline"
                     size="icon"
-                    onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                    aria-label={`Increase quantity of ${item.name}`}
+                    onClick={() => updateQuantity(item.key, item.quantity + 1)}
                   >
                     <Plus className="h-4 w-4" />
                   </Button>
@@ -61,7 +79,8 @@ export default function CartPage() {
                 <Button
                   variant="destructive"
                   size="icon"
-                  onClick={() => removeFromCart(item.id)}
+                  aria-label={`Remove ${item.name} from cart`}
+                  onClick={() => removeFromCart(item.key)}
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
